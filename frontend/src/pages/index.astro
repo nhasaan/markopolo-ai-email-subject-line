@@ -1,0 +1,333 @@
+---
+// This is the main page component
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI-Powered Email Subject Line Optimizer</title>
+  <meta name="description" content="Optimize your email subject lines with AI-powered analysis and suggestions">
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+  <div class="container mx-auto px-4 py-8">
+    <!-- Header -->
+    <header class="text-center mb-12">
+      <h1 class="text-4xl font-bold text-gray-900 mb-4">
+        AI-Powered Email Subject Line Optimizer
+      </h1>
+      <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+        Get AI-powered analysis and suggestions to improve your email subject lines and boost open rates.
+      </p>
+    </header>
+
+    <!-- Main Form -->
+    <main class="max-w-4xl mx-auto">
+      <div class="bg-white rounded-2xl shadow-xl p-8 mb-8">
+        <form id="analyze-form" class="space-y-6">
+          <!-- Subject Line Input -->
+          <div>
+            <label for="subject" class="block text-sm font-medium text-gray-700 mb-2">
+              Email Subject Line
+            </label>
+            <input
+              type="text"
+              id="subject"
+              name="subject"
+              placeholder="Enter your email subject line..."
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              maxlength="200"
+              required
+            />
+            <div class="text-sm text-gray-500 mt-1">
+              <span id="char-count">0</span>/200 characters
+            </div>
+          </div>
+
+          <!-- Industry Selection -->
+          <div>
+            <label for="industry" class="block text-sm font-medium text-gray-700 mb-2">
+              Industry
+            </label>
+            <select
+              id="industry"
+              name="industry"
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              required
+            >
+              <option value="">Select an industry...</option>
+              <option value="e-commerce">E-commerce</option>
+              <option value="SaaS">SaaS</option>
+              <option value="retail">Retail</option>
+              <option value="healthcare">Healthcare</option>
+              <option value="finance">Finance</option>
+              <option value="education">Education</option>
+              <option value="technology">Technology</option>
+              <option value="real-estate">Real Estate</option>
+              <option value="automotive">Automotive</option>
+              <option value="food-beverage">Food & Beverage</option>
+            </select>
+          </div>
+
+          <!-- Submit Button -->
+          <button
+            type="submit"
+            id="analyze-btn"
+            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 focus:ring-4 focus:ring-blue-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+          >
+            <span id="btn-text">Analyze Subject Line</span>
+            <span id="loading-spinner" class="hidden">
+              <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Analyzing...
+            </span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Results Section -->
+      <div id="results" class="hidden">
+        <div class="bg-white rounded-2xl shadow-xl p-8">
+          <h2 class="text-2xl font-bold text-gray-900 mb-6">Analysis Results</h2>
+          
+          <!-- Score Display -->
+          <div class="mb-8">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold text-gray-700">Subject Line Score</h3>
+              <span id="score-value" class="text-3xl font-bold"></span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-4">
+              <div id="score-bar" class="h-4 rounded-full transition-all duration-1000"></div>
+            </div>
+            <p id="score-description" class="text-sm text-gray-600 mt-2"></p>
+          </div>
+
+          <!-- Issues -->
+          <div class="mb-8" id="issues-section">
+            <h3 class="text-lg font-semibold text-gray-700 mb-4">Issues Found</h3>
+            <div id="issues-list" class="space-y-2"></div>
+          </div>
+
+          <!-- AI Suggestions -->
+          <div class="mb-8">
+            <h3 class="text-lg font-semibold text-gray-700 mb-4">AI-Powered Suggestions</h3>
+            <div id="suggestions-list" class="space-y-3"></div>
+          </div>
+
+          <!-- AI Insights -->
+          <div>
+            <h3 class="text-lg font-semibold text-gray-700 mb-4">AI Insights</h3>
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <p id="ai-insights" class="text-gray-700"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Error Message -->
+      <div id="error-message" class="hidden bg-red-50 border border-red-200 rounded-lg p-4 mb-8">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <div class="ml-3">
+            <h3 class="text-sm font-medium text-red-800">Error</h3>
+            <div class="mt-2 text-sm text-red-700">
+              <p id="error-text"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center mt-16 text-gray-500">
+      <p>Built with ❤️ for better email marketing</p>
+    </footer>
+  </div>
+
+  <script>
+    // API Configuration
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
+    
+    // DOM Elements
+    const form = document.getElementById('analyze-form') as HTMLFormElement;
+    const subjectInput = document.getElementById('subject') as HTMLInputElement;
+    const industrySelect = document.getElementById('industry') as HTMLSelectElement;
+    const analyzeBtn = document.getElementById('analyze-btn') as HTMLButtonElement;
+    const btnText = document.getElementById('btn-text') as HTMLSpanElement;
+    const loadingSpinner = document.getElementById('loading-spinner') as HTMLSpanElement;
+    const charCount = document.getElementById('char-count') as HTMLSpanElement;
+    const results = document.getElementById('results') as HTMLDivElement;
+    const errorMessage = document.getElementById('error-message') as HTMLDivElement;
+    const errorText = document.getElementById('error-text') as HTMLParagraphElement;
+    
+    // Character counter
+    subjectInput.addEventListener('input', () => {
+      charCount.textContent = subjectInput.value.length.toString();
+    });
+    
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        form.dispatchEvent(new Event('submit'));
+      }
+    });
+    
+    // Form submission
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const subject = subjectInput.value.trim();
+      const industry = industrySelect.value;
+      
+      if (!subject || !industry) {
+        showError('Please fill in all fields');
+        return;
+      }
+      
+      setLoading(true);
+      hideError();
+      hideResults();
+      
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/analyze-subject`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ subject, industry }),
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to analyze subject line');
+        }
+        
+        const data = await response.json();
+        displayResults(data);
+        
+      } catch (error) {
+        console.error('Error:', error);
+        showError(error instanceof Error ? error.message : 'An unexpected error occurred');
+      } finally {
+        setLoading(false);
+      }
+    });
+    
+    function setLoading(loading: boolean) {
+      analyzeBtn.disabled = loading;
+      if (loading) {
+        btnText.classList.add('hidden');
+        loadingSpinner.classList.remove('hidden');
+      } else {
+        btnText.classList.remove('hidden');
+        loadingSpinner.classList.add('hidden');
+      }
+    }
+    
+    function showError(message: string) {
+      errorText.textContent = message;
+      errorMessage.classList.remove('hidden');
+    }
+    
+    function hideError() {
+      errorMessage.classList.add('hidden');
+    }
+    
+    function hideResults() {
+      results.classList.add('hidden');
+    }
+    
+    function displayResults(data: any) {
+      // Update score
+      const scoreValue = document.getElementById('score-value') as HTMLSpanElement;
+      const scoreBar = document.getElementById('score-bar') as HTMLDivElement;
+      const scoreDescription = document.getElementById('score-description') as HTMLParagraphElement;
+      
+      scoreValue.textContent = `${data.score}/100`;
+      scoreBar.style.width = `${data.score}%`;
+      
+      // Set score color
+      if (data.score >= 80) {
+        scoreBar.className = 'h-4 rounded-full transition-all duration-1000 bg-green-500';
+        scoreDescription.textContent = 'Excellent! This subject line is highly optimized.';
+      } else if (data.score >= 60) {
+        scoreBar.className = 'h-4 rounded-full transition-all duration-1000 bg-yellow-500';
+        scoreDescription.textContent = 'Good, but there\'s room for improvement.';
+      } else {
+        scoreBar.className = 'h-4 rounded-full transition-all duration-1000 bg-red-500';
+        scoreDescription.textContent = 'Needs significant improvement.';
+      }
+      
+      // Display issues
+      const issuesList = document.getElementById('issues-list') as HTMLDivElement;
+      const issuesSection = document.getElementById('issues-section') as HTMLDivElement;
+      
+      if (data.issues && data.issues.length > 0) {
+        issuesList.innerHTML = data.issues.map((issue: string) => `
+          <div class="flex items-center text-red-600">
+            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+            </svg>
+            <span class="capitalize">${issue}</span>
+          </div>
+        `).join('');
+        issuesSection.classList.remove('hidden');
+      } else {
+        issuesSection.classList.add('hidden');
+      }
+      
+      // Display suggestions
+      const suggestionsList = document.getElementById('suggestions-list') as HTMLDivElement;
+      suggestionsList.innerHTML = data.suggestions.map((suggestion: string, index: number) => `
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 flex items-center justify-between">
+          <span class="text-gray-700">${suggestion}</span>
+          <button 
+            onclick="copyToClipboard('${suggestion.replace(/'/g, "\\'")}')"
+            class="ml-4 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm transition-colors duration-200"
+          >
+            Copy
+          </button>
+        </div>
+      `).join('');
+      
+      // Display AI insights
+      const aiInsights = document.getElementById('ai-insights') as HTMLParagraphElement;
+      aiInsights.textContent = data.ai_insights;
+      
+      // Show results
+      results.classList.remove('hidden');
+    }
+    
+    // Copy to clipboard function
+    function copyToClipboard(text: string) {
+      navigator.clipboard.writeText(text).then(() => {
+        // Show temporary success message
+        const button = event?.target as HTMLButtonElement;
+        const originalText = button.textContent;
+        button.textContent = 'Copied!';
+        button.classList.add('bg-green-600');
+        button.classList.remove('bg-blue-600');
+        
+        setTimeout(() => {
+          button.textContent = originalText;
+          button.classList.remove('bg-green-600');
+          button.classList.add('bg-blue-600');
+        }, 2000);
+      }).catch(err => {
+        console.error('Failed to copy: ', err);
+      });
+    }
+    
+    // Make copyToClipboard globally available
+    (window as any).copyToClipboard = copyToClipboard;
+  </script>
+</body>
+</html>
